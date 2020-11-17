@@ -6,14 +6,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import com.ayan.dto.RegisterRequest;
 import com.ayan.exception.SpringRedditException;
 import com.ayan.exception.AuthServiceException;
 import com.ayan.model.NotificationEmail;
 import com.ayan.model.User;
 import com.ayan.model.VerificationToken;
+import com.ayan.payload.request.RegisterRequest;
+import com.ayan.repository.RoleRepository;
 import com.ayan.repository.UserRepository;
 import com.ayan.repository.VerificationTokenRepository;
+
 
 import java.util.Optional;
 import java.util.UUID;
@@ -29,22 +31,24 @@ public class AuthService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	@Autowired
+	private RoleRepository roleRepository;
+	@Autowired
 	private VerificationTokenRepository verificationTokenRepository;
 	@Autowired
 	private MailService mailService;
-	
-	
-	
+
+
+
 	@Transactional
 	public Long signup(RegisterRequest registerRequest) throws AuthServiceException {
 		
 //		verify the user-name and email in the request are not already in use
-		if(userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
-			throw new AuthServiceException("Service.Auth.USERNAME_TAKEN");
-		}
-		if(userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
-			throw new AuthServiceException("Service.Auth.EMAIL_TAKEN");
-		}
+//		if(userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
+//			throw new AuthServiceException("Service.Auth.USERNAME_TAKEN");
+//		}
+//		if(userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+//			throw new AuthServiceException("Service.Auth.EMAIL_TAKEN");
+//		}
 		
 //		Create and save new user in database
 		User user = new User();
@@ -63,7 +67,7 @@ public class AuthService {
 				
 		mailService.sendVerificationEmail(new NotificationEmail("Please Activate your account", user.getEmail(), message),token);
 		
-		return user.getUserId();
+		return user.getId();
 	}
 	
 	private String generateVerificationToken(User user) {
@@ -104,6 +108,6 @@ public class AuthService {
 	public void deleteAll() {
 		userRepository.deleteAll();
 		verificationTokenRepository.deleteAll();
-	}
-	
+		roleRepository.deleteAll();
+	}	
 }

@@ -1,45 +1,55 @@
 package com.ayan.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import java.time.Instant;
+import javax.validation.constraints.Size;
 
-import static javax.persistence.GenerationType.SEQUENCE;
+import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
+
 
 @Entity
+@Table(name = "users",
+		uniqueConstraints = {
+				@UniqueConstraint(columnNames = "username"),
+				@UniqueConstraint(columnNames = "email")
+		})
 public class User {
 
 	@Id
-	@GeneratedValue(strategy = SEQUENCE)
-	private Long userId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
 	@NotBlank(message = "Username is required")
+	@Size(max=20)
 	private String username;
+	
 	@NotBlank(message = "Password is required")
+	@Size(max=120)
 	private String password;
+	
+	@NotBlank(message = "Email is required")
+	@Size(max=50)
 	@Email
-	@NotEmpty(message = "Email is required")
-	@Column(unique=true)
 	private String email;
+	
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "user_roles",
+			joinColumns = @JoinColumn(name="user_id"),
+			inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private Set<Role> roles = new HashSet<>();
+	
 	private Instant created;
 	private boolean enabled;
 	
 //	Constructors
-	
+	public User() { }
 
-	public User() {
-		super();
-	}
-
-	public User(Long userId, @NotBlank(message = "Username is required") String username,
-			@NotBlank(message = "Password is required") String password,
-			@Email @NotEmpty(message = "Email is required") String email, Instant created, boolean enabled) {
-		super();
-		this.userId = userId;
+	public User(Long id, String username, String password, String email, 
+		Instant created, boolean enabled) {
+		this.id = id;
 		this.username = username;
 		this.password = password;
 		this.email = email;
@@ -47,13 +57,12 @@ public class User {
 		this.enabled = enabled;
 	}
 
-	// Getter Setter
-	public Long getUserId() {
-		return userId;
+	public Long getId() {
+		return id;
 	}
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getUsername() {
@@ -80,6 +89,14 @@ public class User {
 		this.email = email;
 	}
 
+	public Set<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
+	}
+
 	public Instant getCreated() {
 		return created;
 	}
@@ -94,66 +111,5 @@ public class User {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-	}
-
-	
-//	Equals HashCode
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((created == null) ? 0 : created.hashCode());
-		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		result = prime * result + (enabled ? 1231 : 1237);
-		result = prime * result + ((password == null) ? 0 : password.hashCode());
-		result = prime * result + ((userId == null) ? 0 : userId.hashCode());
-		result = prime * result + ((username == null) ? 0 : username.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		User other = (User) obj;
-		if (created == null) {
-			if (other.created != null)
-				return false;
-		} else if (!created.equals(other.created))
-			return false;
-		if (email == null) {
-			if (other.email != null)
-				return false;
-		} else if (!email.equals(other.email))
-			return false;
-		if (enabled != other.enabled)
-			return false;
-		if (password == null) {
-			if (other.password != null)
-				return false;
-		} else if (!password.equals(other.password))
-			return false;
-		if (userId == null) {
-			if (other.userId != null)
-				return false;
-		} else if (!userId.equals(other.userId))
-			return false;
-		if (username == null) {
-			if (other.username != null)
-				return false;
-		} else if (!username.equals(other.username))
-			return false;
-		return true;
-	}
-	
-//	To String
-	@Override
-	public String toString() {
-		return "User [userId=" + userId + ", username=" + username + ", password=" + password + ", email=" + email
-				+ ", created=" + created + ", enabled=" + enabled + "]";
 	}
 }
