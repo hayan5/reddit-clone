@@ -7,7 +7,7 @@ import javax.validation.constraints.*;
 
 public class RegisterRequest {
 	@NotBlank(message = "{registerRequest.username.absent}")
-	@Size(min=3, max=20)
+//	@Size(min=3, max=20)
 	private String username;
 	
 	@NotBlank(message = "{registerRequest.email.absent}")

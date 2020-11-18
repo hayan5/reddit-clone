@@ -9,15 +9,15 @@ import org.springframework.stereotype.Component;
 
 import com.ayan.exception.AuthServiceException;
 
-@Aspect
-@Component
-public class LoggingAspect {
-	
-	public static final Log LOGGER = LogFactory.getLog(LoggingAspect.class);
-	
-	@AfterThrowing(pointcut = "execution(* com.ayan.service.AuthService.*(..))", throwing = "exception")
-	public void logAuthServiceException(AuthServiceException exception) {
-		LOGGER.error(exception.getMessage(), exception);
-		
-	}
-}
+//@Aspect
+//@Component
+//public class LoggingAspect {
+//	
+//	public static final Log LOGGER = LogFactory.getLog(LoggingAspect.class);
+//	
+//	@AfterThrowing(pointcut = "execution(* com.ayan.service.AuthService.*(..))", throwing = "exception")
+//	public void logAuthServiceException(AuthServiceException exception) {
+//		LOGGER.error(exception.getMessage(), exception);
+//		
+//	}
+//}
